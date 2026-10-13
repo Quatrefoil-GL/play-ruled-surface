@@ -4,4 +4,6 @@
 
 js-out/
 node_modules/
+.yarn/install-state.gz
 dist/
+.calcit/
