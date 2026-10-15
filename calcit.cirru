@@ -18,11 +18,14 @@
           :code $ quote $ defn comp-chord-fiber (states)
             let
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get states :cursor
+                    get states :cursor
+                    , .unwrap
                   :: 'List 'Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
-                    option:unwrap-or (get states :data) nil
+                    match (get states :data)
+                      (:some found) found
+                      (:none) nil
                     {} $ :fibers $ []
                   :: 'Map 'Tag 'Dynamic
               group ({})
@@ -38,7 +41,8 @@
                 group ({}) & $ ->
                   map
                     quatrefoil.util.core/require-decoded $ try-decode-map-as
-                      option:unwrap $ get state :fibers
+                        get state :fibers
+                        , .unwrap
                       :: 'List 'Dynamic
                     fn (pair)
                       hint-fn $ {}
@@ -107,9 +111,8 @@
           :code $ quote $ defn lerp-chord (p1 p2)
             let
                 n 40
-                d $ &q- p2 $ wo-log p1
-                unit $ wo-log $ &q* d
-                  quaternion (/ 1 n) 0 0 0
+                d $ &q- p2 p1
+                unit $ &q* d $ quaternion (/ 1 n) 0 0 0
               -> (range n)
                 map $ fn (idx)
                   let
@@ -141,18 +144,23 @@
           :code $ quote $ defcomp comp-container (store)
             let
                 states $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get store :states
+                    get store :states
+                    , .unwrap
                   :: 'Map 'Tag 'Dynamic
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get states :cursor
+                    get states :cursor
+                    , .unwrap
                   :: 'List 'Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   either
-                    option:unwrap-or (get states :data) nil
+                    match (get states :data)
+                      (:some found) found
+                      (:none) nil
                     {} $ :tab :fractal-line
                   :: 'Map 'Tag 'Dynamic
                 tab $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :tab
+                    get state :tab
+                    , .unwrap
                   , 'Tag
                 scaled 0.02
               scene ({})
@@ -167,11 +175,7 @@
                       :position $ [] -20 0 -30
                     fn (tab d!)
                       d! cursor $ assoc state :tab tab
-                  case-default tab
-                    text $ {} (:size 2) (:depth 0.5)
-                      :text $ str "|Unknown tab " tab
-                      :position $ [] 0 0 0
-                      :material $ {} (:kind :mesh-lambert) (:color 0xffff33) (:opacity 1)
+                  match tab
                     :ruled-surface $ comp-ruled-surface $ quatrefoil.util.core/require-decoded
                       try-decode-map-as (>> states :ruled) (:: 'Map 'Tag 'Dynamic)
                     :fractal-line $ comp-fractal-line $ quatrefoil.util.core/require-decoded
@@ -182,6 +186,10 @@
                       try-decode-map-as (>> states :chord-fiber) (:: 'Map 'Tag 'Dynamic)
                     :cycloid-mesh $ comp-cycloid-mesh $ quatrefoil.util.core/require-decoded
                       try-decode-map-as (>> states :cycloid) (:: 'Map 'Tag 'Dynamic)
+                    _ $ text $ {} (:size 2) (:depth 0.5)
+                      :text $ str "|Unknown tab " tab
+                      :position $ [] 0 0 0
+                      :material $ {} (:kind :mesh-lambert) (:color 0xffff33) (:opacity 1)
                   group
                     {} $ :position $ [] -10 0 20
                     point-light $ {} (:color 0xffff33) (:intensity 2) (:distance 100)
@@ -199,11 +207,14 @@
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
                 cursor $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get states :cursor
+                    get states :cursor
+                    , .unwrap
                   :: 'List 'Tag
                 state $ require-decoded $ try-decode-map-as
                   or
-                    option:unwrap-or (get states :data) nil
+                    match (get states :data)
+                      (:some found) found
+                      (:none) nil
                     {}
                       :s0 $ vector/v3 0 0 0
                       :s1 $ vector/v3 10 0 0
@@ -211,16 +222,20 @@
                       :e1 $ vector/v3 10 10 1
                   :: 'Map 'Tag 'Dynamic
                 s0 $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :s0
+                    get state :s0
+                    , .unwrap
                   , 'quaternion.vector/V3
                 s1 $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :s1
+                    get state :s1
+                    , .unwrap
                   , 'quaternion.vector/V3
                 e0 $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :e0
+                    get state :e0
+                    , .unwrap
                   , 'quaternion.vector/V3
                 e1 $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :e1
+                    get state :e1
+                    , .unwrap
                   , 'quaternion.vector/V3
                 step 40
                 v0 $ vector/v-scale (vector/&v- e0 s0) (/ 1 step)
@@ -299,39 +314,51 @@
           :code $ quote $ defn comp-cycloid-mesh (states)
             let
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get states :cursor
+                    get states :cursor
+                    , .unwrap
                   :: 'List 'Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
-                    option:unwrap-or (get states :data) nil
+                    match (get states :data)
+                      (:some found) found
+                      (:none) nil
                     {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
                   :: 'Map 'Tag 'Dynamic
                 r1 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :r1
+                    get state :r1
+                    , .unwrap
                   , 'Number
                 theta1 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :theta1
+                    get state :theta1
+                    , .unwrap
                   , 'Number
                 r2 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :r2
+                    get state :r2
+                    , .unwrap
                   , 'Number
                 theta2 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :theta2
+                    get state :theta2
+                    , .unwrap
                   , 'Number
                 r3 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :r3
+                    get state :r3
+                    , .unwrap
                   , 'Number
                 theta3 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :theta3
+                    get state :theta3
+                    , .unwrap
                   , 'Number
                 size $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :size
+                    get state :size
+                    , .unwrap
                   , 'Number
                 jump $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :jump
+                    get state :jump
+                    , .unwrap
                   , 'Number
                 v $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :v
+                    get state :v
+                    , .unwrap
                   , 'Number
                 theta-bound $ [] 0.001 0.6
                 color $ hslx 200 90 70
@@ -447,9 +474,7 @@
       :defs $ {}
         'build-fractal-path $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn build-fractal-path (tab)
-            case-default tab
-              do (js/console.log |unknown tab)
-                [] (quaternion 0 0 0 0) (quaternion 0 0 40 0) (quaternion 0 40 0 0) (quaternion 0 0 0 0)
+            match tab
               :ice $ fold-line4 9 (quaternion 0 0 0 0) (quaternion 0 100 0 0) (quaternion 27 0 0 0) (quaternion 23 0 -18 0) (quaternion 27 0 0 -18) (quaternion 23 0 0 0)
                 q-inverse $ quaternion 50 0 0 0
                 , 0.16
@@ -480,6 +505,8 @@
               :brozing $ fold-line4 10 (quaternion 0 0 0 0) (quaternion 0 100 0 0) (quaternion 0 0 0 15) (quaternion 10 0 0 0) (quaternion 30 0 0 0) (quaternion 40 0 0 -15)
                 q-inverse $ quaternion 40 0 0 0
                 , 0.08
+              _ $ do (js/console.log |unknown tab)
+                [] (quaternion 0 0 0 0) (quaternion 0 0 40 0) (quaternion 0 40 0 0) (quaternion 0 0 0 0)
           :examples $ []
           :schema $ :: 'Fn $ {}
             :args $ [] 'Tag
@@ -489,15 +516,19 @@
           :code $ quote $ defn comp-fractal-line (states)
             let
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get states :cursor
+                    get states :cursor
+                    , .unwrap
                   :: 'List 'Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
-                    option:unwrap-or (get states :data) nil
+                    match (get states :data)
+                      (:some found) found
+                      (:none) nil
                     {} $ :shape :zero
                   :: 'Map 'Tag 'Dynamic
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :shape
+                    get state :shape
+                    , .unwrap
                   , 'Tag
               group ({})
                 comp-tabs
@@ -646,8 +677,7 @@
       :defs $ {}
         'build-fractal-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn build-fractal-tree (shape)
-            case-default shape
-              [] $ [] (quaternion 0 0 0 0) (quaternion 0 10 0 0)
+            match shape
               :cubes $ let
                   inv $ q-inverse $ quaternion 7.5 0 0 0
                 expand-branch4 12 (quaternion 0 0 0 0) (quaternion 0 0 50 0)
@@ -695,6 +725,7 @@
                   &q* (quaternion -8 -8 0 0) inv
                   &q* (quaternion -8 0 0 8) inv
                   , 0.01
+              _ $ [] $ [] (quaternion 0 0 0 0) (quaternion 0 10 0 0)
           :examples $ []
           :schema $ :: 'Fn $ {}
             :args $ [] 'Tag
@@ -703,15 +734,19 @@
           :code $ quote $ defn comp-fractal-tree (states)
             let
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get states :cursor
+                    get states :cursor
+                    , .unwrap
                   :: 'List 'Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
-                    option:unwrap-or (get states :data) nil
+                    match (get states :data)
+                      (:some found) found
+                      (:none) nil
                     {} $ :shape :tree
                   :: 'Map 'Tag 'Dynamic
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  option:unwrap $ get state :shape
+                    get state :shape
+                    , .unwrap
                   , 'Tag
               group ({})
                 comp-tabs
@@ -796,22 +831,26 @@
           :code $ quote $ defcomp comp-tabs (options on-change)
             let
                 selected-tab $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get options :selected
+                    get options :selected
+                    , .unwrap
                   , 'Tag
                 tabs $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get options :tabs
+                    get options :tabs
+                    , .unwrap
                   :: 'List 'Tag
                 position $ require-decoded $ try-decode-map-as
-                  option:unwrap $ get options :position
+                    get options :position
+                    , .unwrap
                   :: 'List 'Number
               group ({}) & $ -> tabs $ map-indexed
                 fn (idx tab)
                   group
                     {} $ :position $ vector/&v-
                       vector/v3
-                        option:unwrap $ nth position 0
-                        option:unwrap $ nth position 1
-                        option:unwrap $ nth position 2
+                          nth position 0
+                          , .unwrap
+                        (nth position 1) .unwrap
+                        (nth position 2) .unwrap
                       vector/v3 0 (* 5 idx) 0
                     box $ {} (:width 8) (:height 4) (:depth 0.4)
                       :position $ [] 0 0 0
@@ -853,7 +892,7 @@
     'app.main $ %{} 'FileEntry
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *store
+          :code $ quote $ defref *store
             {} $ :states $ {}
               :cursor $ []
           :examples $ []
@@ -918,9 +957,9 @@
             |@quatrefoil/utils :refer $ inject-tree-methods
             quatrefoil.core :refer $ render-canvas! init-controls! *global-tree clear-cache! init-renderer! handle-key-event handle-control-events
             app.comp.container :refer $ comp-container
-            app.updater :refer $ [] updater
+            app.updater :refer $ updater
             |three :as THREE
-            touch-control.core :refer $ render-control! control-states start-control-loop! clear-control-loop!
+            touch-control.core :refer $ render-control! start-control-loop! clear-control-loop!
             |bottom-tip :default hud!
             |./calcit.build-errors :default build-errors
             quatrefoil.dsl.object3d-dom :refer $ set-perspective-camera!
@@ -928,7 +967,9 @@
       :defs $ {} $ 'updater
         %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store op op-data)
-            case-default op store $ :states $ update-states store op-data
+            match op
+              :states $ update-states store op-data
+              _ store
           :examples $ []
           :schema $ :: 'Fn $ {}
             :args $ [] (:: 'Map 'Tag 'Dynamic) 'Tag 'Dynamic
