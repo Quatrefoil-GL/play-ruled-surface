@@ -12,7 +12,7 @@ https://github.com/Quatrefoil-GL/quatrefoil-workflow
 
 ### Development
 
-Use Calcit/procs 0.30.0, Caps 0.1.1, Node 24 and Yarn 4.18.0.
+Use paired formal Calcit/procs 0.30.1, Caps 0.1.1, Node 24 and Yarn 4.18.0.
 The maintained sources are `calcit.cirru` and `deps.cirru`; generated `js-out`
 is ignored. The retired `compact.cirru` remains recoverable from Git history.
 
@@ -25,10 +25,16 @@ yarn dev
 ```
 
 For live source compilation, run `calcit -w js` in a separate terminal.
-Published modules are Quaternion 0.2.14, Touch 0.0.31, Pointed Prompt 0.0.19,
-Quatrefoil 0.1.8 and transitive js-ffi 0.2.3, without conflict overrides.
+Published modules are Quaternion 0.2.16, Touch 0.0.32, Pointed Prompt 0.0.20,
+Quatrefoil 0.1.10 and transitive js-ffi 0.2.5, without conflict overrides.
 
 ### Migration and deployment
+
+The 0.30.1 candidate preserves the existing source byte-for-byte, including
+the nominal vector contracts, five scenes, camera/scale, sample density and
+`hud!` page-error display. The earlier 0.30.0 results below are historical
+evidence, not acceptance of the updated dependency graph. Exact candidate CI
+and browser results are recorded in its PR; production deployment is separate.
 
 Nominal Quaternion/V3 values, named ChordPair data and checked callback contracts
 preserve the original formulas and sample density. Renderer boundaries convert
