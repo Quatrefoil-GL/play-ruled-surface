@@ -44,7 +44,7 @@ jobs:
           calcit edit format
           git diff --exit-code -- calcit.cirru
           calcit --check-only --all-defs --format json
-          calcit fix --workflow strict --verify --format json | jq '{validation:.data.validation,suggestions:.data.suggestions,diagnostics:.diagnostics}'
+          calcit fix --workflow strict --verify --format json | jq -e 'select(.data.workflow.status == "passed" and .diagnostics == []) | {workflow:.data.workflow,diagnostics:.diagnostics}'
           calcit js
       - name: Select CDN asset prefix
         id: asset-path
