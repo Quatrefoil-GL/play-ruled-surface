@@ -13,7 +13,7 @@
         'ChordPair $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct ChordPair (:p1 'quaternion.core/Quaternion) (:p2 'quaternion.core/Quaternion) (:angle 'Number)
           :examples $ []
-          :schema $ :: 'StructDef
+          :schema $ quote StructDef
         'comp-chord-fiber $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-chord-fiber (states)
             let
@@ -45,9 +45,7 @@
                         , .unwrap
                       :: 'List 'Dynamic
                     fn (pair)
-                      hint-fn $ {}
-                        :args $ [] 'Dynamic
-                        :return 'app.comp.chord-fiber/ChordPair
+                      hint-fn $ Fn Dynamic $ -> app.comp.chord-fiber/ChordPair
                       if (struct? pair)
                         if (&struct:matches? pair ChordPair) pair $ raise |expected-ChordPair-in-fibers
                         raise |expected-ChordPair-in-fibers
@@ -79,9 +77,7 @@
                             :depthTest true
                             :lineWidth 0.5
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Shape)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape) (:features :js-ffi)
         'generate-segment $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn generate-segment ()
             let
@@ -104,9 +100,7 @@
                   , dy2 $ * r2 (sin angle2)
               ChordPair :p1 p1 :p2 p2 :angle angle2
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'app.comp.chord-fiber/ChordPair)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> app.comp.chord-fiber/ChordPair) (:features :js-ffi)
         'lerp-chord $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn lerp-chord (p1 p2)
             let
@@ -125,9 +119,8 @@
                       &q* p2 $ quaternion (pow ratio 2) 0 0 0
                 append p2
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'quaternion.core/Quaternion 'quaternion.core/Quaternion
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn quaternion.core/Quaternion quaternion.core/Quaternion
+            -> $ List quaternion.core/Quaternion
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.chord-fiber
           :require
@@ -201,8 +194,7 @@
                   ; point-light $ {} (:color 0xffffff) (:intensity 2) (:distance 200)
                     :position $ [] 0 60 0
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Component)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
+          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Component)
         'comp-ruled-surface $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
@@ -291,9 +283,7 @@
                           * 360 $ quatrefoil.core/js-number $ js/Math.random
                           , 100 80
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Component)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Component) (:features :js-ffi)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require
@@ -426,16 +416,13 @@
                   :position $ [] 0 0 0
                   :material $ {} (:kind :line-basic) (:color 0xffc6a0) (:transparent true) (:opacity 0.8) (:linewidth 0.1)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Shape)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
+          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape)
         'gen-trail $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn gen-trail
             r1 theta1 r2 theta2 r3 theta3 size jump v
             let
                 calc-position $ fn (idx)
-                  hint-fn $ {}
-                    :args $ [] 'Number
-                    :return $ :: 'List 'Number
+                  hint-fn $ Fn Number $ -> (List Number)
                   let
                       t $ &* idx v
                       v1 $ vector/v3
@@ -453,15 +440,13 @@
                       (:v3 x y z) ([] x y z)
               -> (range size)
                 map $ fn (idx)
-                  hint-fn $ {}
-                    :args $ [] 'Number
-                    :return $ :: 'List $ :: 'List 'Number
+                  hint-fn $ Fn Number $ ->
+                    List $ List Number
                   [] (calc-position idx)
                     calc-position $ + idx jump
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'Number 'Number 'Number 'Number 'Number 'Number 'Number 'Number
-            :return $ :: 'List $ :: 'List (:: 'List 'Number)
+          :schema $ quote $ Fn Number Number Number Number Number Number Number Number Number
+            -> $ List $ List (List Number)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.cycloid
           :require
@@ -508,10 +493,9 @@
               _ $ do (js/console.log |unknown tab)
                 [] (quaternion 0 0 0 0) (quaternion 0 0 40 0) (quaternion 0 40 0 0) (quaternion 0 0 0 0)
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Tag
-            :features $ #{} :js-ffi
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Tag
+            -> $ List quaternion.core/Quaternion
+            :features :js-ffi
         'comp-fractal-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-line (states)
             let
@@ -548,9 +532,7 @@
                   :position $ [] 5 -10 0
                   :material $ {} (:kind :line-basic) (:color 0xffa6a0) (:transparent true) (:opacity 0.6) (:linewidth 0.1)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Shape)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape) (:features :js-ffi)
         'fold-line2 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line2 (level base v a b full' minimal-seg)
             let
@@ -566,9 +548,8 @@
                   fold-line2 (dec level) (&q+ base branch-a) (&q- branch-b branch-a) a b full' minimal-seg
                   fold-line2 (dec level) (&q+ base branch-b) (&q- v branch-b) a b full' minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List quaternion.core/Quaternion
         'fold-line3 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line3 (level base v a b c full' minimal-seg)
             let
@@ -586,9 +567,8 @@
                   fold-line3 (dec level) (&q+ base branch-b) (&q- branch-c branch-b) a b c full' minimal-seg
                   fold-line3 (dec level) (&q+ base branch-c) (&q- v branch-c) a b c full' minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List quaternion.core/Quaternion
         'fold-line4 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line4
             level base v a b c d full' minimal-seg
@@ -609,9 +589,8 @@
                   fold-line4 (dec level) (&q+ base branch-c) (&q- branch-d branch-c) a b c d full' minimal-seg
                   fold-line4 (dec level) (&q+ base branch-d) (&q- v branch-d) a b c d full' minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List quaternion.core/Quaternion
         'fold-line5 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line5
             level base v a b c d e full' minimal-seg
@@ -634,9 +613,8 @@
                   fold-line5 (dec level) (&q+ base branch-d) (&q- branch-e branch-d) a b c d e full' minimal-seg
                   fold-line5 (dec level) (&q+ base branch-e) (&q- v branch-e) a b c d e full' minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List quaternion.core/Quaternion
         'fold-line5-caltrop $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line5-caltrop
             level base v a b c d e full' minimal-seg
@@ -661,9 +639,8 @@
                     , a b c d e full' minimal-seg
                   fold-line5-caltrop (dec level) (&q+ base branch-e) (&q- v branch-e) a b c d e full' minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List quaternion.core/Quaternion
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.fractal-line
           :require
@@ -727,9 +704,8 @@
                   , 0.01
               _ $ [] $ [] (quaternion 0 0 0 0) (quaternion 0 10 0 0)
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Tag
-            :return $ :: 'List $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Tag
+            -> $ List $ List quaternion.core/Quaternion
         'comp-fractal-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-tree (states)
             let
@@ -765,8 +741,7 @@
                   :position $ [] 0 0 0
                   :material $ {} (:kind :line-basic) (:color 0xffb6b0) (:transparent true) (:opacity 0.4) (:linewidth 0.3)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Shape)
-            :args $ [] $ :: 'Map 'Tag 'Dynamic
+          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape)
         'expand-branch3 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn expand-branch3 (level from v a b c minimal-seg)
             let
@@ -787,9 +762,8 @@
                   expand-branch3 (dec level) p0 branch-b a b c minimal-seg
                   expand-branch3 (dec level) p0 branch-c a b c minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List $ List quaternion.core/Quaternion
         'expand-branch4 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn expand-branch4 (level from v a b c d minimal-seg)
             let
@@ -813,9 +787,8 @@
                   expand-branch4 (dec level) p0 branch-c a b c d minimal-seg
                   expand-branch4 (dec level) p0 branch-d a b c d minimal-seg
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] 'Number 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'quaternion.core/Quaternion 'Number
-            :return $ :: 'List $ :: 'List 'quaternion.core/Quaternion
+          :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
+            -> $ List $ List quaternion.core/Quaternion
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.fractal-tree
           :require
@@ -860,12 +833,9 @@
                         :transparent true
                       :event $ {} $ :click
                         fn (e d!)
-                          hint-fn $ {}
-                            :args $ [] 'Dynamic $ :: 'Fn
-                              {}
-                                :args $ [] 'Dynamic 'Dynamic
-                                :return 'Unit
-                            :return 'Unit
+                          hint-fn $ Fn Dynamic
+                            Fn Dynamic Dynamic $ -> Unit
+                            -> Unit
                           on-change tab d!
                     text $ {}
                       :text $ str tab
@@ -874,12 +844,11 @@
                       :size 1.4
                       :depth 0.1
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'quatrefoil.schema/Component)
-            :args $ [] (:: 'Map 'Tag 'Dynamic)
-              :: 'Fn $ {} (:return 'Unit)
-                :args $ [] 'Tag $ :: 'Fn
-                  {} (:return 'Unit)
-                    :args $ [] 'Dynamic 'Dynamic
+          :schema $ quote $ Fn (Map Tag Dynamic)
+            Fn Tag
+              Fn Dynamic Dynamic $ -> Unit
+              -> Unit
+            -> quatrefoil.schema/Component
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.tabs
           :require
@@ -896,7 +865,7 @@
             {} $ :states $ {}
               :cursor $ []
           :examples $ []
-          :schema $ :: 'Ref $ :: 'Map 'Tag 'Dynamic
+          :schema $ quote $ Ref (Map Tag Dynamic)
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op op-data)
             if (list? op)
@@ -909,8 +878,7 @@
                 reset! *store store
                 , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ [] 'Dynamic 'Dynamic
+          :schema $ quote $ Fn Dynamic Dynamic (-> Unit)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!) (inject-tree-methods)
             set-perspective-camera! $ {} (:fov 45) (:near 0.1) (:far 1000)
@@ -928,9 +896,7 @@
             println "|App started!"
             , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (non-nil? build-errors) (hud! |error build-errors)
@@ -941,16 +907,12 @@
                 println "|Code updated."
             , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! () (; println "|Render app:")
             render-canvas! (comp-container @*store) dispatch!
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
-            :features $ #{} :js-ffi
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
@@ -971,9 +933,8 @@
               :states $ update-states store op-data
               _ store
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] (:: 'Map 'Tag 'Dynamic) 'Tag 'Dynamic
-            :return $ :: 'Map 'Tag 'Dynamic
+          :schema $ quote $ Fn (Map Tag Dynamic) Tag Dynamic
+            -> $ Map Tag Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require $ quatrefoil.cursor :refer $ update-states
