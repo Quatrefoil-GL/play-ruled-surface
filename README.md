@@ -1,72 +1,38 @@
-
 Play ruled surface
 ----
 
-> Based on [Quatrefoil](https://github.com/Quatrefoil-GL/quatrefoil).
+Demo: https://r.tiye.me/Quatrefoil-GL/play-ruled-surface/
 
-Demo https://r.tiye.me/Quatrefoil-GL/play-ruled-surface/
+### 使用者影响
 
-### Workflow
+配对使用正式 Calcit CLI/procs 0.32.1，类型标注由官方 CLI 迁移。
+Quatrefoil 0.2.0、Quaternion 0.2.19、Touch Control 0.0.35、Pointed Prompt 0.0.24、
+JS-FFI 0.2.9 组成一致的正式依赖图。包龄明确为 60 分钟，无单版本豁免。
+保留原类型/质量门禁和 hud! 页面提示，不新增验证脚本或测试框架，不提交生成目录。
 
-https://github.com/Quatrefoil-GL/quatrefoil-workflow
+本轮仅迁移官方类型标注格式和配对依赖。26个项目定义的完整code/schema/元数据/测试
+与格式化后的原基线一致；Quaternion/V3/ChordPair合同、五场景、采样密度、状态分支、
+相机和缩放不变。不宣称原开放UI/状态类型已全部闭合。
 
-### Development
-
-Use paired formal Calcit/procs 0.30.1, Caps 0.1.1, Node 24 and Yarn 4.18.0.
-The maintained sources are `calcit.cirru` and `deps.cirru`; generated `js-out`
-is ignored. The retired `compact.cirru` remains recoverable from Git history.
+### 开发与验收
 
 ```sh
 caps --strict --ci
 yarn install --immutable
 caps verify --toolchain
 yarn compile
+yarn build
 yarn dev
 ```
 
-For live source compilation, run `calcit -w js` in a separate terminal.
-Published modules are Quaternion 0.2.16, Touch 0.0.32, Pointed Prompt 0.0.20,
-Quatrefoil 0.1.10 and transitive js-ffi 0.2.5, without conflict overrides.
+完整strict、237/237定义、26/26公开定义、工具链配对、immutable安装及构建通过。
+项目原本无附带测试，不新增验证框架。实际IAB默认视角仍极小，使用原w键靠近后
+看到默认三角形与选项，a键改变相机，刷新恢复默认。未宣称五场景、11条线、六种树、
+参数拖动、VR/gamepad或跨GPU都已验收；旧临时近景副本证据不冒充本轮验收。
+默认可见性问题继续跟进issue #14，未改生产相机，也未强制清缓存或注入生成JS。
 
-### Migration and deployment
-
-The 0.30.1 candidate preserves the existing source byte-for-byte, including
-the nominal vector contracts, five scenes, camera/scale, sample density and
-`hud!` page-error display. The earlier 0.30.0 results below are historical
-evidence, not acceptance of the updated dependency graph. Exact candidate CI
-and browser results are recorded in its PR; production deployment is separate.
-
-Nominal Quaternion/V3 values, named ChordPair data and checked callback contracts
-preserve the original formulas and sample density. Renderer boundaries convert
-points to xyz lists. Cycloid and chord use separate state branches.
-The 237-definition check, all 26 public project definitions and the full strict
-gate (235 reachable definitions) pass. Old Option helpers use method calls or
-explicit matching at heterogeneous state boundaries; literal `case-default`
-branches use `match`, identity `wo-log` wrappers are removed, and the store uses
-`defref`. Checked decoders remain in place. Twelve unresolved Dynamic positions
-in seven definitions remain; this is not a claim of complete type closure.
-
-For this upgrade, an ignored math probe passes five assertions under the old
-0.29.3/formal module graph and new 0.30.0/formal graph in native mode, and under
-the new graph in an actual browser: 600 cycloid segments, first xyz point, 41
-chord points and both endpoints. The formulas, branch bodies, sample parameters
-and metadata of 13 math definitions were compared through official query views.
-The original project has no attached test suite. Its browser entry starts
-without errors; the original production scale/camera leave the scene very small.
-The older migration's five-scene/11-line/six-tree interaction acceptance used an
-ignored closer-camera copy and was not repeated for this upgrade. VR/gamepad
-and simultaneous multi-touch remain untested. Node execution of the browser
-math modules is not supported by the existing `@quatrefoil/utils` packaging;
-the successful JS math evidence is from the browser, not Node.
-
-`VITE_BASE_URL` selects the CDN asset base, defaulting to relative paths.
-Actions uses Node 24, immutable dependencies and the complete strict gate.
-Same-repository PR uploads have isolated run/attempt prefixes. COS v1.2.0 checks
-every uploaded file through `public-base-url`, without a separate verifier.
-Only main deploys to the unchanged rsync destination. Local CDN builds and
-workflow lint pass. PR Actions/COS must be verified for the exact submitted
-commit; production deployment requires separate authorization and is not part
-of the local acceptance above.
+VITE_BASE_URL默认相对路径。原PR按编号/run/attempt隔离COS前缀，使用action内置
+逐文件校验，无额外校验脚本。main才使用原rsync路径；本地构建不代替实际上传/生产验收。
 
 ### License
 
