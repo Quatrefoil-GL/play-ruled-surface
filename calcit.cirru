@@ -11,7 +11,7 @@
     'app.comp.chord-fiber $ %{} 'FileEntry
       :defs $ {}
         'ChordPair $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct ChordPair (:p1 'quaternion.core/Quaternion) (:p2 'quaternion.core/Quaternion) (:angle 'Number)
+          :code $ quote $ defstruct ChordPair (:p1 quaternion.core/Quaternion) (:p2 quaternion.core/Quaternion) (:angle Number)
           :examples $ []
           :schema $ quote StructDef
         'comp-chord-fiber $ %{} 'CodeEntry (:doc |)
@@ -20,14 +20,14 @@
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
                     match (get states :data)
                       (:some found) found
                       (:none) nil
                     {} $ :fibers $ []
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
               group ({})
                 sphere $ {} (:radius 1) (:width-segments 10) (:height-segments 10)
                   :position $ [] 0 0 0
@@ -43,7 +43,7 @@
                     quatrefoil.util.core/require-decoded $ try-decode-map-as
                         get state :fibers
                         , .unwrap
-                      :: 'List 'Dynamic
+                      quote $ List Dynamic
                     fn (pair)
                       hint-fn $ Fn Dynamic $ -> app.comp.chord-fiber/ChordPair
                       if (struct? pair)
@@ -139,18 +139,18 @@
                 states $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get store :states
                     , .unwrap
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   either
                     match (get states :data)
                       (:some found) found
                       (:none) nil
                     {} $ :tab :fractal-line
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
                 tab $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :tab
                     , .unwrap
@@ -170,15 +170,20 @@
                       d! cursor $ assoc state :tab tab
                   match tab
                     :ruled-surface $ comp-ruled-surface $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :ruled) (:: 'Map 'Tag 'Dynamic)
+                      try-decode-map-as (>> states :ruled)
+                        quote $ Map Tag Dynamic
                     :fractal-line $ comp-fractal-line $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :fractal-line) (:: 'Map 'Tag 'Dynamic)
+                      try-decode-map-as (>> states :fractal-line)
+                        quote $ Map Tag Dynamic
                     :fractal-tree $ comp-fractal-tree $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :fractal-tree) (:: 'Map 'Tag 'Dynamic)
+                      try-decode-map-as (>> states :fractal-tree)
+                        quote $ Map Tag Dynamic
                     :chord-fiber $ comp-chord-fiber $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :chord-fiber) (:: 'Map 'Tag 'Dynamic)
+                      try-decode-map-as (>> states :chord-fiber)
+                        quote $ Map Tag Dynamic
                     :cycloid-mesh $ comp-cycloid-mesh $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :cycloid) (:: 'Map 'Tag 'Dynamic)
+                      try-decode-map-as (>> states :cycloid)
+                        quote $ Map Tag Dynamic
                     _ $ text $ {} (:size 2) (:depth 0.5)
                       :text $ str "|Unknown tab " tab
                       :position $ [] 0 0 0
@@ -201,7 +206,7 @@
                 cursor $ require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 state $ require-decoded $ try-decode-map-as
                   or
                     match (get states :data)
@@ -212,7 +217,7 @@
                       :s1 $ vector/v3 10 0 0
                       :e0 $ vector/v3 0 10 1
                       :e1 $ vector/v3 10 10 1
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
                 s0 $ require-decoded $ try-decode-map-as
                     get state :s0
                     , .unwrap
@@ -306,14 +311,14 @@
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
                     match (get states :data)
                       (:some found) found
                       (:none) nil
                     {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
                 r1 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :r1
                     , .unwrap
@@ -417,12 +422,13 @@
                   :material $ {} (:kind :line-basic) (:color 0xffc6a0) (:transparent true) (:opacity 0.8) (:linewidth 0.1)
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape)
-        'gen-trail $ %{} 'CodeEntry (:doc |)
+        'gen-trail $ %{} 'CodeEntry
+          :doc "|Generate a list of fixed endpoint pairs; each endpoint is an xyz Number Tuple. Preserve point order and the original cycloid formula."
           :code $ quote $ defn gen-trail
             r1 theta1 r2 theta2 r3 theta3 size jump v
             let
                 calc-position $ fn (idx)
-                  hint-fn $ Fn Number $ -> (List Number)
+                  hint-fn $ Fn Number $ -> (Tuple Number Number Number)
                   let
                       t $ &* idx v
                       v1 $ vector/v3
@@ -441,12 +447,12 @@
               -> (range size)
                 map $ fn (idx)
                   hint-fn $ Fn Number $ ->
-                    List $ List Number
+                    Tuple (Tuple Number Number Number) (Tuple Number Number Number)
                   [] (calc-position idx)
                     calc-position $ + idx jump
           :examples $ []
           :schema $ quote $ Fn Number Number Number Number Number Number Number Number Number
-            -> $ List $ List (List Number)
+            -> $ List $ Tuple (Tuple Number Number Number) (Tuple Number Number Number)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.cycloid
           :require
@@ -502,14 +508,14 @@
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
                     match (get states :data)
                       (:some found) found
                       (:none) nil
                     {} $ :shape :zero
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :shape
                     , .unwrap
@@ -652,7 +658,8 @@
             app.comp.tabs :refer $ comp-tabs
     'app.comp.fractal-tree $ %{} 'FileEntry
       :defs $ {}
-        'build-fractal-tree $ %{} 'CodeEntry (:doc |)
+        'build-fractal-tree $ %{} 'CodeEntry
+          :doc "|Build ordered two-Quaternion segments for the selected shape, including the original unknown-tag fallback."
           :code $ quote $ defn build-fractal-tree (shape)
             match shape
               :cubes $ let
@@ -705,21 +712,21 @@
               _ $ [] $ [] (quaternion 0 0 0 0) (quaternion 0 10 0 0)
           :examples $ []
           :schema $ quote $ Fn Tag
-            -> $ List $ List quaternion.core/Quaternion
+            -> $ List $ Tuple quaternion.core/Quaternion quaternion.core/Quaternion
         'comp-fractal-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-tree (states)
             let
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                   or
                     match (get states :data)
                       (:some found) found
                       (:none) nil
                     {} $ :shape :tree
-                  :: 'Map 'Tag 'Dynamic
+                  quote $ Map Tag Dynamic
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :shape
                     , .unwrap
@@ -742,7 +749,8 @@
                   :material $ {} (:kind :line-basic) (:color 0xffb6b0) (:transparent true) (:opacity 0.4) (:linewidth 0.3)
           :examples $ []
           :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape)
-        'expand-branch3 $ %{} 'CodeEntry (:doc |)
+        'expand-branch3 $ %{} 'CodeEntry
+          :doc "|Expand the original three-branch recursion into fixed two-Quaternion segments without changing cutoff or traversal order."
           :code $ quote $ defn expand-branch3 (level from v a b c minimal-seg)
             let
                 branch-base v
@@ -753,7 +761,8 @@
                 p1 $ &q+ from branch-a
                 p2 $ &q+ from branch-b
                 p3 $ &q+ from branch-c
-                current $ [] $ [] from p0
+                current $ [] $ assert-type ([] from p0)
+                  quote $ Tuple quaternion.core/Quaternion quaternion.core/Quaternion
               if
                 or (<= level 0)
                   &< (q-length2 v) minimal-seg
@@ -763,8 +772,9 @@
                   expand-branch3 (dec level) p0 branch-c a b c minimal-seg
           :examples $ []
           :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
-            -> $ List $ List quaternion.core/Quaternion
-        'expand-branch4 $ %{} 'CodeEntry (:doc |)
+            -> $ List $ Tuple quaternion.core/Quaternion quaternion.core/Quaternion
+        'expand-branch4 $ %{} 'CodeEntry
+          :doc "|Expand the original four-branch recursion into fixed two-Quaternion segments without changing cutoff or traversal order."
           :code $ quote $ defn expand-branch4 (level from v a b c d minimal-seg)
             let
                 branch-base v
@@ -777,7 +787,8 @@
                 p2 $ &q+ from branch-b
                 p3 $ &q+ from branch-c
                 p4 $ &q+ from branch-d
-                current $ [] $ [] from p0
+                current $ [] $ assert-type ([] from p0)
+                  quote $ Tuple quaternion.core/Quaternion quaternion.core/Quaternion
               if
                 or (<= level 0)
                   &< (q-length2 v) minimal-seg
@@ -788,7 +799,7 @@
                   expand-branch4 (dec level) p0 branch-d a b c d minimal-seg
           :examples $ []
           :schema $ quote $ Fn Number quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion quaternion.core/Quaternion Number
-            -> $ List $ List quaternion.core/Quaternion
+            -> $ List $ Tuple quaternion.core/Quaternion quaternion.core/Quaternion
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.fractal-tree
           :require
@@ -810,11 +821,11 @@
                 tabs $ require-decoded $ try-decode-map-as
                     get options :tabs
                     , .unwrap
-                  :: 'List 'Tag
+                  quote $ List Tag
                 position $ require-decoded $ try-decode-map-as
                     get options :position
                     , .unwrap
-                  :: 'List 'Number
+                  quote $ List Number
               group ({}) & $ -> tabs $ map-indexed
                 fn (idx tab)
                   group
