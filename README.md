@@ -3,7 +3,11 @@ Play ruled surface
 
 Demo: https://r.tiye.me/Quatrefoil-GL/play-ruled-surface/
 
-### 使用者影响
+### Calcit 0.37.0 使用说明
+
+使用正式 Calcit 与 `@calcit/procs` 0.37.0、Quatrefoil 0.3.4 和 Touch Control 0.0.39。升级后重新安装依赖并构建。端点使用 V3，标签切换使用明确路径，纤维集合经 ChordPair 列表检查。生成 JS 验证五个场景和 50 条纤维。实际 WebGL 画面尚未复验。
+
+### 历史：0.34.2 迁移
 
 配对使用正式 Calcit CLI/procs 0.34.2、Quatrefoil 0.3.1、Quaternion 0.2.19、
 Touch Control 0.0.36、Pointed Prompt 0.0.24 和 JS-FFI 0.2.9。
