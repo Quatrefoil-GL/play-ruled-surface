@@ -27,7 +27,7 @@
                       or found $ {} $ :fibers ([])
                     (:none)
                       {} $ :fibers $ []
-                  Map Tag Dynamic
+                  Map Tag app.updater/SceneValue
               group ({})
                 sphere $ {} (:radius 1) (:width-segments 10) (:height-segments 10)
                   :position $ [] 0 0 0
@@ -130,10 +130,7 @@
         'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-container (store)
             let
-                states $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                    get store :states
-                    , .unwrap
-                  Map Tag Dynamic
+                states $ :states store
                 cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get states :cursor
                     , .unwrap
@@ -144,7 +141,7 @@
                       either found $ {} $ :tab :fractal-line
                     (:none)
                       {} $ :tab :fractal-line
-                  Map Tag Dynamic
+                  Map Tag app.updater/SceneValue
                 tab $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :tab
                     , .unwrap
@@ -156,13 +153,10 @@
                     :scale $ [] scaled scaled scaled
                     :position $ [] 0 1 -0.2
                   comp-tabs
-                    {}
-                      :tabs $ [] :ruled-surface :fractal-line :fractal-tree :chord-fiber :cycloid-mesh
-                      :selected tab
-                      :position $ [] -20 0 -30
+                    app.comp.tabs/TabsOptions :tabs ([] :ruled-surface :fractal-line :fractal-tree :chord-fiber :cycloid-mesh) :selected tab :position $ quaternion.vector/v3 -20 0 -30
                     fn (tab d!)
                       hint-fn $ Fn Tag
-                        Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                        Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                         -> Unit
                       d! cursor $ assoc state :tab tab
                   match tab
@@ -191,7 +185,7 @@
                   ; point-light $ {} (:color 0xffffff) (:intensity 2) (:distance 200)
                     :position $ [] 0 60 0
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Component)
+          :schema $ quote $ Fn app.updater/Store (-> quatrefoil.schema/Component)
         'comp-ruled-surface $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
@@ -213,7 +207,7 @@
                         :s1 $ vector/v3 10 0 0
                         :e0 $ vector/v3 0 10 1
                         :e1 $ vector/v3 10 10 1
-                  Map Tag Dynamic
+                  Map Tag app.updater/SceneValue
                 s0 $ require-decoded $ try-decode-map-as
                     get state :s0
                     , .unwrap
@@ -238,28 +232,28 @@
                   {} (:speed 0.1) (:color 0xffffaa) (:position s0)
                   fn (p d!)
                     hint-fn $ Fn quaternion.vector/V3
-                      Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                      Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :s0 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position s1)
                   fn (p d!)
                     hint-fn $ Fn quaternion.vector/V3
-                      Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                      Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :s1 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position e0)
                   fn (p d!)
                     hint-fn $ Fn quaternion.vector/V3
-                      Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                      Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :e0 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position e1)
                   fn (p d!)
                     hint-fn $ Fn quaternion.vector/V3
-                      Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                      Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :e1 p
                 line $ {}
@@ -326,7 +320,7 @@
                       or found $ {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
                     (:none)
                       {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
-                  Map Tag Dynamic
+                  Map Tag app.updater/SceneValue
                 r1 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :r1
                     , .unwrap
@@ -523,19 +517,19 @@
                       or found $ {} $ :shape :zero
                     (:none)
                       {} $ :shape :zero
-                  Map Tag Dynamic
+                  Map Tag app.updater/SceneValue
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :shape
                     , .unwrap
                   , 'Tag
               group ({})
                 comp-tabs
-                  {} (:selected shape)
-                    :tabs $ [] :ice :fly-city :cable-stayed :water-caltrop :lamp-tree :wormhole :fold-snow :ingot :chain :brozing :try
-                    :position $ [] -35 20 -30
+                  app.comp.tabs/TabsOptions :selected shape :tabs
+                    [] :ice :fly-city :cable-stayed :water-caltrop :lamp-tree :wormhole :fold-snow :ingot :chain :brozing :try
+                    , :position $ quaternion.vector/v3 -35 20 -30
                   fn (tab d!)
                     hint-fn $ Fn Tag
-                      Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                      Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :shape tab
                 line $ {}
@@ -737,19 +731,17 @@
                       or found $ {} $ :shape :tree
                     (:none)
                       {} $ :shape :tree
-                  Map Tag Dynamic
+                  Map Tag app.updater/SceneValue
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :shape
                     , .unwrap
                   , 'Tag
               group ({})
                 comp-tabs
-                  {} (:selected shape)
-                    :tabs $ [] :tree :cubes :umbrella3 :umbrella4 :crystal :try
-                    :position $ [] -55 20 0
+                  app.comp.tabs/TabsOptions :selected shape :tabs ([] :tree :cubes :umbrella3 :umbrella4 :crystal :try) :position $ quaternion.vector/v3 -55 20 0
                   fn (tab d!)
                     hint-fn $ Fn Tag
-                      Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                      Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :shape tab
                 line-segments $ {}
@@ -822,31 +814,24 @@
             quaternion.core :refer $ v-scale v+ &v+ &q+ &q- &q* q-inverse q-length2 quaternion
             app.comp.tabs :refer $ comp-tabs
     'app.comp.tabs $ %{} 'FileEntry
-      :defs $ {} $ 'comp-tabs
-        %{} 'CodeEntry (:doc |)
+      :defs $ {}
+        'TabsOptions $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct TabsOptions
+            :tabs $ List Tag
+            :selected Tag
+            :position quaternion.vector/V3
+          :examples $ []
+          :schema $ quote StructDef
+        'comp-tabs $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-tabs (options on-change)
             let
-                selected-tab $ require-decoded $ try-decode-map-as
-                    get options :selected
-                    , .unwrap
-                  , 'Tag
-                tabs $ require-decoded $ try-decode-map-as
-                    get options :tabs
-                    , .unwrap
-                  List Tag
-                position $ require-decoded $ try-decode-map-as
-                    get options :position
-                    , .unwrap
-                  List Number
+                selected-tab $ :selected options
+                tabs $ :tabs options
+                position $ :position options
               group ({}) & $ -> tabs $ map-indexed
                 fn (idx tab)
                   group
-                    {} $ :position $ vector/&v-
-                      vector/v3
-                          nth position 0
-                          , .unwrap
-                        (nth position 1) .unwrap
-                        (nth position 2) .unwrap
+                    {} $ :position $ vector/&v- position
                       vector/v3 0 (* 5 idx) 0
                     box $ {} (:width 8) (:height 4) (:depth 0.4)
                       :position $ [] 0 0 0
@@ -857,7 +842,7 @@
                       :event $ {} $ :click
                         fn (e d!)
                           hint-fn $ Fn Dynamic
-                            Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+                            Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                             -> Unit
                           on-change tab d!
                     text $ {}
@@ -867,9 +852,9 @@
                       :size 1.4
                       :depth 0.1
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic)
+          :schema $ quote $ Fn app.comp.tabs/TabsOptions
             Fn Tag
-              Fn (List Tag) (Map Tag Dynamic) (-> Unit)
+              Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
               -> Unit
             -> quatrefoil.schema/Component
       :ns $ %{} 'NsEntry (:doc |)
@@ -885,20 +870,20 @@
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *store
-            {} $ :states $ {}
-              :cursor $ []
+            app.updater/Store :states $ {} $ :cursor ([])
           :examples $ []
-          :schema $ quote $ Ref (Map Tag Dynamic)
+          :schema $ quote $ Ref app.updater/Store
         'dispatch! $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn dispatch! (op op-data)
+          :code $ quote $ defn dispatch! (op data)
             if (list? op)
-              recur :states $ [] op op-data
+              recur :states $ [] op data
               let
-                  store $ updater @*store
-                    quatrefoil.util.core/require-decoded $ try-decode-map-as op 'Tag
-                    , op-data
-                ; js/console.log |Dispatch: op op-data store
-                reset! *store store
+                  tag $ decode-map-as op 'Tag
+                if (= tag :states)
+                  let[] (cursor next-state)
+                    decode-map-as data $ Tuple (List Tag) (Map Tag app.updater/SceneValue)
+                    reset! *store $ updater @*store cursor next-state
+                  reset! *store @*store
                 , &unit
           :examples $ []
           :schema $ quote $ Fn Dynamic Dynamic (-> Unit)
@@ -949,15 +934,24 @@
             |./calcit.build-errors :default build-errors
             quatrefoil.dsl.object3d-dom :refer $ set-perspective-camera!
     'app.updater $ %{} 'FileEntry
-      :defs $ {} $ 'updater
-        %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn updater (store op op-data)
-            match op
-              :states $ update-states store op-data
-              _ store
+      :defs $ {}
+        'SceneValue $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion SceneValue Tag Number quaternion.vector/V3 (List app.comp.chord-fiber/ChordPair)
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) Tag Dynamic
-            -> $ Map Tag Dynamic
+          :schema $ quote UnionDef
+        'Store $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct Store
+            :states $ Map Tag Dynamic
+          :examples $ []
+          :schema $ quote StructDef
+        'updater $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn updater (store cursor data)
+            &struct:assoc store :states $ decode-map-as
+              assoc-in (:states store)
+                concat cursor $ [] :data
+                , data
+              Map Tag Dynamic
+          :examples $ []
+          :schema $ quote $ Fn app.updater/Store (List Tag) (Map Tag app.updater/SceneValue) (-> app.updater/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
-          :require $ quatrefoil.cursor :refer $ update-states
