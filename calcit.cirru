@@ -17,17 +17,9 @@
         'comp-chord-fiber $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-chord-fiber (states)
             let
-                cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                    get states :cursor
-                    , .unwrap
-                  List Tag
-                state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  match (get states :data)
-                    (:some found)
-                      or found $ {} $ :fibers ([])
-                    (:none)
-                      {} $ :fibers $ []
-                  Map Tag app.updater/SceneValue
+                cursor $ :path states
+                state $ .unwrap-or (:data states)
+                  {} $ :fibers $ []
               group ({})
                 sphere $ {} (:radius 1) (:width-segments 10) (:height-segments 10)
                   :position $ [] 0 0 0
@@ -71,7 +63,7 @@
                             :depthTest true
                             :lineWidth 0.5
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape) (:features :js-ffi)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape) (:features :js-ffi)
         'generate-segment $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn generate-segment ()
             let
@@ -160,16 +152,11 @@
                         -> Unit
                       d! cursor $ assoc state :tab tab
                   match tab
-                    :ruled-surface $ comp-ruled-surface $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :ruled) (Map Tag Dynamic)
-                    :fractal-line $ comp-fractal-line $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :fractal-line) (Map Tag Dynamic)
-                    :fractal-tree $ comp-fractal-tree $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :fractal-tree) (Map Tag Dynamic)
-                    :chord-fiber $ comp-chord-fiber $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :chord-fiber) (Map Tag Dynamic)
-                    :cycloid-mesh $ comp-cycloid-mesh $ quatrefoil.util.core/require-decoded
-                      try-decode-map-as (>> states :cycloid) (Map Tag Dynamic)
+                    :ruled-surface $ comp-ruled-surface $ app.updater/decode-scene-cursor (>> states :ruled)
+                    :fractal-line $ comp-fractal-line $ app.updater/decode-scene-cursor (>> states :fractal-line)
+                    :fractal-tree $ comp-fractal-tree $ app.updater/decode-scene-cursor (>> states :fractal-tree)
+                    :chord-fiber $ comp-chord-fiber $ app.updater/decode-scene-cursor (>> states :chord-fiber)
+                    :cycloid-mesh $ comp-cycloid-mesh $ app.updater/decode-scene-cursor (>> states :cycloid)
                     _ $ text $ {} (:size 2) (:depth 0.5)
                       :text $ str "|Unknown tab " tab
                       :position $ [] 0 0 0
@@ -189,25 +176,13 @@
         'comp-ruled-surface $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
-                cursor $ require-decoded $ try-decode-map-as
-                    get states :cursor
-                    , .unwrap
-                  List Tag
-                state $ require-decoded $ try-decode-map-as
-                  match (get states :data)
-                    (:some found)
-                      or found $ {}
-                        :s0 $ vector/v3 0 0 0
-                        :s1 $ vector/v3 10 0 0
-                        :e0 $ vector/v3 0 10 1
-                        :e1 $ vector/v3 10 10 1
-                    (:none)
-                      {}
-                        :s0 $ vector/v3 0 0 0
-                        :s1 $ vector/v3 10 0 0
-                        :e0 $ vector/v3 0 10 1
-                        :e1 $ vector/v3 10 10 1
-                  Map Tag app.updater/SceneValue
+                cursor $ :path states
+                state $ .unwrap-or (:data states)
+                  {}
+                    :s0 $ vector/v3 0 0 0
+                    :s1 $ vector/v3 10 0 0
+                    :e0 $ vector/v3 0 10 1
+                    :e1 $ vector/v3 10 10 1
                 s0 $ require-decoded $ try-decode-map-as
                     get state :s0
                     , .unwrap
@@ -290,7 +265,7 @@
                           * 360 $ quatrefoil.core/js-number $ js/Math.random
                           , 100 80
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Component) (:features :js-ffi)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Component) (:features :js-ffi)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require
@@ -310,17 +285,9 @@
         'comp-cycloid-mesh $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-cycloid-mesh (states)
             let
-                cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                    get states :cursor
-                    , .unwrap
-                  List Tag
-                state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  match (get states :data)
-                    (:some found)
-                      or found $ {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
-                    (:none)
-                      {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
-                  Map Tag app.updater/SceneValue
+                cursor $ :path states
+                state $ .unwrap-or (:data states)
+                  {} (:shape :zero) (:r1 10) (:theta1 0.09) (:r2 5) (:theta2 0.12) (:r3 0) (:theta3 0.16) (:size 600) (:v 1) (:jump 10)
                 r1 $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :r1
                     , .unwrap
@@ -423,7 +390,7 @@
                   :position $ [] 0 0 0
                   :material $ {} (:kind :line-basic) (:color 0xffc6a0) (:transparent true) (:opacity 0.8) (:linewidth 0.1)
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape)
         'gen-trail $ %{} 'CodeEntry
           :doc "|Generate a list of fixed endpoint pairs; each endpoint is an xyz Number Tuple. Preserve point order and the original cycloid formula."
           :code $ quote $ defn gen-trail
@@ -507,17 +474,9 @@
         'comp-fractal-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-line (states)
             let
-                cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                    get states :cursor
-                    , .unwrap
-                  List Tag
-                state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  match (get states :data)
-                    (:some found)
-                      or found $ {} $ :shape :zero
-                    (:none)
-                      {} $ :shape :zero
-                  Map Tag app.updater/SceneValue
+                cursor $ :path states
+                state $ .unwrap-or (:data states)
+                  {} $ :shape :zero
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :shape
                     , .unwrap
@@ -543,7 +502,7 @@
                   :position $ [] 5 -10 0
                   :material $ {} (:kind :line-basic) (:color 0xffa6a0) (:transparent true) (:opacity 0.6) (:linewidth 0.1)
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape) (:features :js-ffi)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape) (:features :js-ffi)
         'fold-line2 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line2 (level base v a b full' minimal-seg)
             let
@@ -721,17 +680,9 @@
         'comp-fractal-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-tree (states)
             let
-                cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                    get states :cursor
-                    , .unwrap
-                  List Tag
-                state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  match (get states :data)
-                    (:some found)
-                      or found $ {} $ :shape :tree
-                    (:none)
-                      {} $ :shape :tree
-                  Map Tag app.updater/SceneValue
+                cursor $ :path states
+                state $ .unwrap-or (:data states)
+                  {} $ :shape :tree
                 shape $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :shape
                     , .unwrap
@@ -754,7 +705,7 @@
                   :position $ [] 0 0 0
                   :material $ {} (:kind :line-basic) (:color 0xffb6b0) (:transparent true) (:opacity 0.4) (:linewidth 0.3)
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) (-> quatrefoil.schema/Shape)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape)
         'expand-branch3 $ %{} 'CodeEntry
           :doc "|Expand the original three-branch recursion into fixed two-Quaternion segments without changing cutoff or traversal order."
           :code $ quote $ defn expand-branch3 (level from v a b c minimal-seg)
@@ -935,6 +886,12 @@
             quatrefoil.dsl.object3d-dom :refer $ set-perspective-camera!
     'app.updater $ %{} 'FileEntry
       :defs $ {}
+        'SceneCursor $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct SceneCursor
+            :path $ List Tag
+            :data $ Option $ Map Tag app.updater/SceneValue
+          :examples $ []
+          :schema $ quote StructDef
         'SceneValue $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defunion SceneValue Tag Number quaternion.vector/V3 (List app.comp.chord-fiber/ChordPair)
           :examples $ []
@@ -944,6 +901,22 @@
             :states $ Map Tag Dynamic
           :examples $ []
           :schema $ quote StructDef
+        'decode-scene-cursor $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn decode-scene-cursor (states)
+            let
+                fields $ decode-map-as states $ Map Tag Dynamic
+                path $ decode-map-as
+                  .unwrap $ get fields :cursor
+                  List Tag
+                data $ match (get fields :data)
+                  (:some raw)
+                    if raw
+                      Option :some $ decode-map-as raw $ Map Tag app.updater/SceneValue
+                      Option :none
+                  (:none) (Option :none)
+              SceneCursor :path path :data data
+          :examples $ []
+          :schema $ quote $ Fn Dynamic (-> app.updater/SceneCursor)
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store cursor data)
             &struct:assoc store :states $ decode-map-as
