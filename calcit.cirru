@@ -206,28 +206,28 @@
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position s0)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :s0 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position s1)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :s1 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position e0)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :e0 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position e1)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :e1 p
@@ -792,7 +792,7 @@
                         :transparent true
                       :event $ {} $ :click
                         fn (e d!)
-                          hint-fn $ Fn Dynamic
+                          hint-fn $ Fn js-ffi.browser/MouseEventHost
                             Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                             -> Unit
                           on-change tab d!
