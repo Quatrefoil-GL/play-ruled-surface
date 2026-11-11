@@ -86,7 +86,7 @@
                   , dy2 $ * r2 (sin angle2)
               ChordPair :p1 p1 :p2 p2 :angle angle2
           :examples $ []
-          :schema $ quote $ Fn (-> app.comp.chord-fiber/ChordPair) (:features :js-ffi)
+          :schema $ quote $ Fn (-> ChordPair) (:features :js-ffi)
         'lerp-chord $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn lerp-chord (p1 p2)
             let
@@ -803,7 +803,7 @@
                       :size 1.4
                       :depth 0.1
           :examples $ []
-          :schema $ quote $ Fn app.comp.tabs/TabsOptions
+          :schema $ quote $ Fn TabsOptions
             Fn Tag
               Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
               -> Unit
@@ -827,7 +827,9 @@
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op data)
             if (list? op)
-              recur :states $ [] op data
+              reset! *store $ updater @*store
+                decode-map-as op $ List Tag
+                decode-map-as data $ Map Tag app.updater/SceneValue
               let
                   tag $ decode-map-as op 'Tag
                 if (= tag :states)
@@ -836,8 +838,9 @@
                     reset! *store $ updater @*store cursor next-state
                   reset! *store @*store
                 , &unit
+            , &unit
           :examples $ []
-          :schema $ quote $ Fn Dynamic Dynamic (-> Unit)
+          :schema $ quote $ Fn Action Payload (-> Unit) (:generics Action Payload)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (load-console-formatter!) (inject-tree-methods)
             set-perspective-camera! $ {} (:fov 45) (:near 0.1) (:far 1000)
@@ -911,12 +914,12 @@
                 data $ match (get fields :data)
                   (:some raw)
                     if raw
-                      Option :some $ decode-map-as raw $ Map Tag app.updater/SceneValue
-                      Option :none
-                  (:none) (Option :none)
+                      Some $ decode-map-as raw $ Map Tag app.updater/SceneValue
+                      , None
+                  (:none) None
               SceneCursor :path path :data data
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> app.updater/SceneCursor)
+          :schema $ quote $ Fn Input (-> SceneCursor) (:generics Input)
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store cursor data)
             &struct:assoc store :states $ decode-map-as
@@ -925,6 +928,6 @@
                 , data
               Map Tag Dynamic
           :examples $ []
-          :schema $ quote $ Fn app.updater/Store (List Tag) (Map Tag app.updater/SceneValue) (-> app.updater/Store)
+          :schema $ quote $ Fn Store (List Tag) (Map Tag SceneValue) (-> Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
