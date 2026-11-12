@@ -122,18 +122,9 @@
         'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-container (store)
             let
-                states $ :states store
-                cursor $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                    get states :cursor
-                    , .unwrap
-                  List Tag
-                state $ quatrefoil.util.core/require-decoded $ try-decode-map-as
-                  match (get states :data)
-                    (:some found)
-                      either found $ {} $ :tab :fractal-line
-                    (:none)
-                      {} $ :tab :fractal-line
-                  Map Tag app.updater/SceneValue
+                cursor $ []
+                state $ .unwrap-or (:data store)
+                  {} $ :tab :fractal-line
                 tab $ quatrefoil.util.core/require-decoded $ try-decode-map-as
                     get state :tab
                     , .unwrap
@@ -152,11 +143,11 @@
                         -> Unit
                       d! cursor $ assoc state :tab tab
                   match tab
-                    :ruled-surface $ comp-ruled-surface $ app.updater/decode-scene-cursor (>> states :ruled)
-                    :fractal-line $ comp-fractal-line $ app.updater/decode-scene-cursor (>> states :fractal-line)
-                    :fractal-tree $ comp-fractal-tree $ app.updater/decode-scene-cursor (>> states :fractal-tree)
-                    :chord-fiber $ comp-chord-fiber $ app.updater/decode-scene-cursor (>> states :chord-fiber)
-                    :cycloid-mesh $ comp-cycloid-mesh $ app.updater/decode-scene-cursor (>> states :cycloid)
+                    :ruled-surface $ comp-ruled-surface $ app.updater/read-scene-cursor store :ruled
+                    :fractal-line $ comp-fractal-line $ app.updater/read-scene-cursor store :fractal-line
+                    :fractal-tree $ comp-fractal-tree $ app.updater/read-scene-cursor store :fractal-tree
+                    :chord-fiber $ comp-chord-fiber $ app.updater/read-scene-cursor store :chord-fiber
+                    :cycloid-mesh $ comp-cycloid-mesh $ app.updater/read-scene-cursor store :cycloid
                     _ $ text $ {} (:size 2) (:depth 0.5)
                       :text $ str "|Unknown tab " tab
                       :position $ [] 0 0 0
@@ -172,7 +163,7 @@
                   ; point-light $ {} (:color 0xffffff) (:intensity 2) (:distance 200)
                     :position $ [] 0 60 0
           :examples $ []
-          :schema $ quote $ Fn app.updater/Store (-> quatrefoil.schema/Component)
+          :schema $ quote $ Fn app.updater/SceneState (-> quatrefoil.schema/Component)
         'comp-ruled-surface $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
@@ -206,28 +197,28 @@
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position s0)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :s0 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position s1)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :s1 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position e0)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :e0 p
                 comp-pin-point
                   {} (:speed 0.1) (:color 0xffffaa) (:position e1)
                   fn (p d!)
-                    hint-fn $ Fn quaternion.vector/V3
+                    hint-fn $ Fn vector/V3
                       Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                       -> Unit
                     d! cursor $ assoc state :e1 p
@@ -270,7 +261,7 @@
         :code $ quote $ ns app.comp.container
           :require
             quatrefoil.alias :refer $ group box sphere point-light ambient-light scene text line tube mesh-line
-            quatrefoil.core :refer $ defcomp >> hslx
+            quatrefoil.core :refer $ defcomp hslx
             quatrefoil.comp.control :refer $ comp-pin-point
             quatrefoil.app.materials :refer $ cover-line
             app.comp.fractal-line :refer $ comp-fractal-line
@@ -792,7 +783,7 @@
                         :transparent true
                       :event $ {} $ :click
                         fn (e d!)
-                          hint-fn $ Fn Dynamic
+                          hint-fn $ Fn js-ffi.browser/MouseEventHost
                             Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                             -> Unit
                           on-change tab d!
@@ -820,10 +811,9 @@
     'app.main $ %{} 'FileEntry
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defref *store
-            app.updater/Store :states $ {} $ :cursor ([])
+          :code $ quote $ defref *store app.updater/empty-scene-state
           :examples $ []
-          :schema $ quote $ Ref app.updater/Store
+          :schema $ quote $ Ref app.updater/SceneState
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op data)
             if (list? op)
@@ -895,39 +885,63 @@
             :data $ Option $ Map Tag app.updater/SceneValue
           :examples $ []
           :schema $ quote StructDef
+        'SceneState $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct SceneState
+            :children $ Map Tag SceneState
+            :data $ Option $ Map Tag SceneValue
+          :examples $ []
+          :schema $ quote StructDef
         'SceneValue $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defunion SceneValue Tag Number quaternion.vector/V3 (List app.comp.chord-fiber/ChordPair)
           :examples $ []
           :schema $ quote UnionDef
-        'Store $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct Store
-            :states $ Map Tag Dynamic
+        'empty-scene-state $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ def empty-scene-state
+            SceneState :children ({}) :data None
           :examples $ []
-          :schema $ quote StructDef
-        'decode-scene-cursor $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn decode-scene-cursor (states)
+          :schema $ quote SceneState
+        'read-scene-cursor $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn read-scene-cursor (store branch)
             let
-                fields $ decode-map-as states $ Map Tag Dynamic
-                path $ decode-map-as
-                  .unwrap $ get fields :cursor
-                  List Tag
-                data $ match (get fields :data)
-                  (:some raw)
-                    if raw
-                      Some $ decode-map-as raw $ Map Tag app.updater/SceneValue
-                      , None
-                  (:none) None
-              SceneCursor :path path :data data
+                child $ get (:children store) branch
+              SceneCursor :path ([] branch) :data $ .fold child
+                fn () None
+                fn (node) (:data node)
           :examples $ []
-          :schema $ quote $ Fn Input (-> SceneCursor) (:generics Input)
+          :schema $ quote $ Fn SceneState Tag (-> SceneCursor)
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store cursor data)
-            &struct:assoc store :states $ decode-map-as
-              assoc-in (:states store)
-                concat cursor $ [] :data
-                , data
-              Map Tag Dynamic
+            match (first cursor)
+              (:none)
+                assoc store :data $ Some data
+              (:some key)
+                let
+                    children $ :children store
+                    child $ .unwrap-or (get children key) empty-scene-state
+                  assoc store :children $ assoc children key $ updater child (rest cursor) data
           :examples $ []
-          :schema $ quote $ Fn Store (List Tag) (Map Tag SceneValue) (-> Store)
+          :schema $ quote $ Fn SceneState (List Tag) (Map Tag SceneValue) (-> SceneState)
+          :tests $ [] $ %{} 'TestEntry (:name |preserves-scene-branches)
+            :code $ quote $ let
+                root $ updater empty-scene-state ([])
+                  {} $ :tab :chord-fiber
+                branch $ updater root ([] :chord-fiber)
+                  {} $ :angle 12
+                changed $ updater branch ([] :chord-fiber :detail)
+                  {} $ :angle 30
+                control $ read-scene-cursor changed :chord-fiber
+              assert= ([] :chord-fiber) (:path control)
+              assert=
+                Some $ {} $ :angle 12
+                :data control
+              assert=
+                Some $ {} $ :tab :chord-fiber
+                :data changed
+              assert= None $ :data $ read-scene-cursor changed :ruled
+              assert=
+                Some $ {} $ :angle 30
+                :data $ .unwrap $ get
+                  :children $ .unwrap $ get (:children changed) :chord-fiber
+                  , :detail
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
