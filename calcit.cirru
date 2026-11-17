@@ -142,16 +142,18 @@
                         Fn (List Tag) (Map Tag app.updater/SceneValue) (-> Unit)
                         -> Unit
                       d! cursor $ assoc state :tab tab
-                  match tab
-                    :ruled-surface $ comp-ruled-surface $ app.updater/read-scene-cursor store :ruled
-                    :fractal-line $ comp-fractal-line $ app.updater/read-scene-cursor store :fractal-line
-                    :fractal-tree $ comp-fractal-tree $ app.updater/read-scene-cursor store :fractal-tree
-                    :chord-fiber $ comp-chord-fiber $ app.updater/read-scene-cursor store :chord-fiber
-                    :cycloid-mesh $ comp-cycloid-mesh $ app.updater/read-scene-cursor store :cycloid
-                    _ $ text $ {} (:size 2) (:depth 0.5)
-                      :text $ str "|Unknown tab " tab
-                      :position $ [] 0 0 0
-                      :material $ {} (:kind :mesh-lambert) (:color 0xffff33) (:opacity 1)
+                  decode-map-as
+                    match tab
+                      :ruled-surface $ comp-ruled-surface $ app.updater/read-scene-cursor store :ruled
+                      :fractal-line $ comp-fractal-line $ app.updater/read-scene-cursor store :fractal-line
+                      :fractal-tree $ comp-fractal-tree $ app.updater/read-scene-cursor store :fractal-tree
+                      :chord-fiber $ comp-chord-fiber $ app.updater/read-scene-cursor store :chord-fiber
+                      :cycloid-mesh $ comp-cycloid-mesh $ app.updater/read-scene-cursor store :cycloid
+                      _ $ text $ {} (:size 2) (:depth 0.5)
+                        :text $ str "|Unknown tab " tab
+                        :position $ [] 0 0 0
+                        :material $ {} (:kind :mesh-lambert) (:color 0xffff33) (:opacity 1)
+                    , 'quatrefoil.schema/RenderTree
                   group
                     {} $ :position $ [] -10 0 20
                     point-light $ {} (:color 0xffff33) (:intensity 2) (:distance 100)
@@ -163,7 +165,7 @@
                   ; point-light $ {} (:color 0xffffff) (:intensity 2) (:distance 200)
                     :position $ [] 0 60 0
           :examples $ []
-          :schema $ quote $ Fn app.updater/SceneState (-> quatrefoil.schema/Component)
+          :schema $ quote $ Fn app.updater/SceneState (-> quatrefoil.schema/Component) (:features :state)
         'comp-ruled-surface $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
@@ -256,7 +258,7 @@
                           * 360 $ quatrefoil.core/js-number $ js/Math.random
                           , 100 80
           :examples $ []
-          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Component) (:features :js-ffi)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Component) (:features :js-ffi :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require
@@ -864,7 +866,7 @@
           :code $ quote $ defn render-app! () (; println "|Render app:")
             render-canvas! (comp-container @*store) dispatch!
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi :state)
+          :schema $ quote $ Fn (-> Unit) (:features :io :js-ffi :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require
