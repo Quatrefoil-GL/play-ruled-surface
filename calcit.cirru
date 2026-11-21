@@ -165,7 +165,7 @@
                   ; point-light $ {} (:color 0xffffff) (:intensity 2) (:distance 200)
                     :position $ [] 0 60 0
           :examples $ []
-          :schema $ quote $ Fn app.updater/SceneState (-> quatrefoil.schema/Component) (:features :state)
+          :schema $ quote $ Fn app.updater/SceneState (-> quatrefoil.schema/Component) (:features :io :state)
         'comp-ruled-surface $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-ruled-surface (states)
             let
@@ -463,7 +463,7 @@
           :examples $ []
           :schema $ quote $ Fn Tag
             -> $ List quaternion.core/Quaternion
-            :features :js-ffi
+            :features :io :js-ffi
         'comp-fractal-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-line (states)
             let
@@ -495,7 +495,7 @@
                   :position $ [] 5 -10 0
                   :material $ {} (:kind :line-basic) (:color 0xffa6a0) (:transparent true) (:opacity 0.6) (:linewidth 0.1)
           :examples $ []
-          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape) (:features :js-ffi)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape) (:features :io :js-ffi)
         'fold-line2 $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn fold-line2 (level base v a b full' minimal-seg)
             let
@@ -670,6 +670,7 @@
           :examples $ []
           :schema $ quote $ Fn Tag
             -> $ List $ Tuple quaternion.core/Quaternion quaternion.core/Quaternion
+            :features :io
         'comp-fractal-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-fractal-tree (states)
             let
@@ -698,7 +699,7 @@
                   :position $ [] 0 0 0
                   :material $ {} (:kind :line-basic) (:color 0xffb6b0) (:transparent true) (:opacity 0.4) (:linewidth 0.3)
           :examples $ []
-          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape)
+          :schema $ quote $ Fn app.updater/SceneCursor (-> quatrefoil.schema/Shape) (:features :io)
         'expand-branch3 $ %{} 'CodeEntry
           :doc "|Expand the original three-branch recursion into fixed two-Quaternion segments without changing cutoff or traversal order."
           :code $ quote $ defn expand-branch3 (level from v a b c minimal-seg)
