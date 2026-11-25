@@ -3,9 +3,9 @@ Play ruled surface
 
 Demo: https://r.tiye.me/Quatrefoil-GL/play-ruled-surface/
 
-### Calcit 0.44.0 使用说明
+### Calcit 0.45.1 使用说明
 
-使用正式 Calcit 与 `@calcit/procs` 0.44.0、Quatrefoil 0.3.8、Touch Control 0.0.44、Quaternion 0.2.26 和 Pointed Prompt 0.0.31。升级后重新安装依赖并构建。分形生成和组件调用链声明 `:io`，反映 Quaternion 逆运算的诊断。端点使用 V3，标签切换使用明确路径，纤维集合经 ChordPair 列表检查。状态值使用 Tag、Number、V3 和 ChordPair 列表的 union，标签位置使用 V3。此前版本的 Chrome 验收已验证五个场景出帧以及坐标、数值和 50 条纤维的状态更新。
+使用正式 Calcit 与 `@calcit/procs` 0.45.1、Quatrefoil 0.3.9、Touch Control 0.0.45、Quaternion 0.2.27 和 Pointed Prompt 0.0.32。升级后重新安装依赖并构建。分形生成和组件调用链声明 `:io`，反映 Quaternion 逆运算的诊断。端点使用 V3，标签切换使用明确路径，纤维集合经 ChordPair 列表检查。状态值使用 Tag、Number、V3 和 ChordPair 列表的 union，标签位置使用 V3。此前版本的 Chrome 验收已验证五个场景出帧以及坐标、数值和 50 条纤维的状态更新。 本次 0.45.1 升级已通过 269 个定义的严格检查、原状态分支测试和前端构建；尚未重新验收浏览器交互。
 
 ### 历史：0.34.2 迁移
 
